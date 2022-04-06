@@ -22,15 +22,37 @@ public class JDBCPrimeraConexion {
         }
         
         try {
+            /*ESENCIAL PARA CONECTARSE A LA BASE DE DATOS*/
             String url = "jdbc:mysql://localhost:3306/prueba";
-            //DriveManager.getConnection(url);
-            Connection conn = DriverManager.getConnection(url,"root","root");
-            
-            
-            conn.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+            String username = "root";
+            String password = "";
+
+            //CREAR CONEXION, STATEMENT, RESULT SET PARA USAR
+            Connection connection = DriverManager.getConnection(url, username, password);
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT * FROM persona");
+
+            while (rs.next()) {
+
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+                String apellido = rs.getString("apellido");
+                Date fecha = rs.getDate("fecha");
+
+                /* String.format permite imprimir cada columna con su valor correspondiente:
+                    %d para mostrar como int
+                    %s para mostrar como string
+                */
+                System.out.println(String.format("%d, %s %s, %s", id, nombre, apellido, fecha));
+            }
+
+            rs.close();
+            statement.close();
+            connection.close();
+
+        } catch (SQLException ex) {
+            System.out.println(ex);
         }
-        
-    }
+
+        }
 }
