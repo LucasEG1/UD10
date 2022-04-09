@@ -22,6 +22,9 @@ public class JDBCPrimeraConexion {
         }
         
         MetodosSQL.selectEnTabla("jugador");
-
+        System.out.println("---------");
+        MetodosSQL.agregarJugador();
+        System.out.println("---------");
+        MetodosSQL.selectEnTabla("jugador");
         }
 }
