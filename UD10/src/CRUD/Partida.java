@@ -34,6 +34,7 @@ public class Partida {
         statement.close();
         connection.close();
 }
+    
     public static void detallesPartidaPorId(int idPartida) throws Exception {
         String url = "jdbc:mysql://localhost:3306/scoreboard";
         String username = "root";
@@ -41,27 +42,32 @@ public class Partida {
 
         //CREAR CONEXION, STATEMENT, RESULT SET PARA USAR
         Connection connection = DriverManager.getConnection(url, username, password);
-        Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("select jg.username, jg.kills, jg.deaths, jg.mvp"
+        Statement stmtSelect = connection.createStatement();
+        Statement stmtUpdate = connection.createStatement();
+        
+        stmtUpdate.execute("update jugador set mvp = true where username='" + sacarMvp(idPartida) + "'");
+        ResultSet rs = stmtSelect.executeQuery("select jg.username, jg.kills, jg.deaths, jg.mvp"
                 + " from jugador_partida jp join jugador jg on jg.username=jp.username"
                 + " where jp.idPartida=" + idPartida);
-
+        
+        
         System.out.println("RESULTADOS DE LA PARTIDA (ID: " + idPartida + ")");
         System.out.println("\nUSERNAME\tASESINATOS\tMUERTES \t MVP");
         while (rs.next()) {
-
             String nomJugador = rs.getString("username");
             int kills = rs.getInt("kills");
             int deaths = rs.getInt("deaths");
             boolean mvp = rs.getBoolean("mvp");
-
+            
             System.out.println(String.format("%s,\t\t %d,\t\t %d,\t\t %s", nomJugador, kills, deaths, mvp));
         }
 
         rs.close();
-        statement.close();
+        stmtSelect.close();
+        stmtUpdate.close();
         connection.close();
 }
+    
     public static int elegirIDDePartida() throws Exception {
         String url = "jdbc:mysql://localhost:3306/scoreboard";
         String username = "root";
@@ -91,6 +97,7 @@ public class Partida {
         System.out.print("Elige uno: ");
         return leer.nextInt();
 }
+    
     public static boolean crearPartida(int cuantosJugadores) throws Exception {
         int idPart = -1;
         ArrayList<Jugador> jugadores = new ArrayList<>();
@@ -144,4 +151,27 @@ public class Partida {
         return exitoso;
     }
     
+    public static String sacarMvp(int idPartida) throws Exception{
+        String url = "jdbc:mysql://localhost:3306/scoreboard";
+        String username = "root";
+        String password = "";
+
+        //CREAR CONEXION, STATEMENT, RESULT SET PARA USAR
+        Connection connection = DriverManager.getConnection(url, username, password);
+        Statement statement = connection.createStatement();
+        ResultSet rs = statement.executeQuery("select jg.username, kills/deaths as 'KD' "
+                + "from jugador jg join jugador_partida jp on jg.username=jp.username "
+                + "where jp.idPartida=" + idPartida + " order by KD desc limit 1");
+        
+        String nomMvp = "";
+        while (rs.next()) {
+            nomMvp = rs.getString("username");
+        }
+        rs.close();
+        statement.close();
+        connection.close();
+        
+        return nomMvp;
+    }
+       
 }
