@@ -11,6 +11,10 @@ import java.util.Scanner;
 public class Partida {
     private static Scanner leer = new Scanner(System.in);    
     
+    /**
+     * Muestra todas las partidas registradas en la Base de Datos.
+     * @throws SQLException 
+     */
     public static void verTodasPartidas() throws SQLException {
         String url = "jdbc:mysql://localhost:3306/scoreboard";
         String username = "root";
@@ -35,6 +39,11 @@ public class Partida {
         connection.close();
 }
     
+    /**
+     * Muestra los jugadores y estadísticas de cada uno en una partida concreta
+     * @param idPartida La partida a detallar
+     * @throws Exception 
+     */
     public static void detallesPartidaPorId(int idPartida) throws Exception {
         String url = "jdbc:mysql://localhost:3306/scoreboard";
         String username = "root";
@@ -68,6 +77,11 @@ public class Partida {
         connection.close();
 }
     
+    /**
+     * Muestra todas las partidas guardadas (ID, Fecha, Número de jugadores)
+     * @return el ID de la partida elegida
+     * @throws Exception 
+     */
     public static int elegirIDDePartida() throws Exception {
         String url = "jdbc:mysql://localhost:3306/scoreboard";
         String username = "root";
@@ -98,6 +112,13 @@ public class Partida {
         return leer.nextInt();
 }
     
+    /**
+     * Función para crear una partida. Se debe introducir el nombre, asesinatos
+     * y muertes de cada jugador.
+     * @param cuantosJugadores El número de jugadores que participan en la partida
+     * @return TRUE si se pudo crear la partida, FALSE en caso contrario
+     * @throws Exception 
+     */
     public static boolean crearPartida(int cuantosJugadores) throws Exception {
         int idPart = -1;
         ArrayList<Jugador> jugadores = new ArrayList<>();
@@ -151,6 +172,32 @@ public class Partida {
         return exitoso;
     }
     
+    public static boolean eliminarPartida(int idPartida) throws Exception {
+        
+        String url = "jdbc:mysql://localhost:3306/scoreboard";
+        String ConnUsername = "root";
+        String password = "";
+
+        //CREAR CONEXION, STATEMENT, RESULT SET PARA HACER CONSULTAS, 
+        //EXECUTE() PARA OTRAS COSAS (NO GUARDAR EN ResultSet)
+        Connection connection = DriverManager.getConnection(url, ConnUsername, password);
+        Statement statement = connection.createStatement();
+        
+        //Primero, creamos la partida con hueco para cuantosJugadores
+        statement.execute("delete from jugador_partida where idPartida=" + idPartida);
+        boolean exitoso = statement.execute("delete from partida where idPartida=" + idPartida);
+        
+        statement.close();
+        connection.close();
+        return exitoso;
+    }
+    
+    /**
+     * Mediante un SELECT, devuelve el nombre del jugador con más asesinatos por muerte (MVP)
+     * @param idPartida el ID de la partida de la que se saca el MVP
+     * @return String, el nombre del usuario que obtiene la calificación de MVP
+     * @throws Exception 
+     */
     public static String sacarMvp(int idPartida) throws Exception{
         String url = "jdbc:mysql://localhost:3306/scoreboard";
         String username = "root";

@@ -9,8 +9,9 @@ import java.sql.*;
  * @author Mario Tomás Zanón
  */
 public class Lasergame {
-    //al borrar un jugador, se tiene que ajustas numJugaodres de su partida
+    
     private static Scanner leer = new Scanner(System.in);
+    
     
     public static void main(String[] args) {
         
@@ -78,6 +79,18 @@ public class Lasergame {
                     }
                     break;
                 case 4:
+                    try {
+                        Partida.eliminarPartida(Partida.elegirIDDePartida());
+                    } catch (InputMismatchException e) {
+                        System.out.println("Introduzca un numero entero. La operación se ha cancelado.");
+                    } catch (SQLException sqle) {
+                        System.out.print("Error en la sintaxis SQL: ");
+                        System.out.println(sqle.getMessage());
+                    } catch (Exception ex) {
+                        System.out.println(ex.getMessage());
+                    }
+                    break;
+                case 5:
                     System.out.println("¡Gracias! ¡Hasta la próxima!");
                     break;
                 default:
@@ -86,18 +99,24 @@ public class Lasergame {
             }
 
             System.out.println("");
-        } while (opcion != 4);
+        } while (opcion != 5);
         
         
         
     }
     
+    /**
+     * Función para mostrar las opciones del menú
+     * @return número de opción elegida
+     * @throws Exception 
+     */
     public static int menu() throws Exception {
                 
         System.out.println(" 1. Crear partida");
         System.out.println(" 2. Ver partidas guardadas");
-        System.out.println(" 3. Buscar partida por ID");
-        System.out.println(" 4. Salir del programa");
+        System.out.println(" 3. Buscar detalles de una partida por ID");
+        System.out.println(" 4. Eliminar una partida");
+        System.out.println(" 5. Salir del programa");
         
         System.out.println("\n Por favor, introduzca a continuación la acción"
                 + "\nque desee realizar");
